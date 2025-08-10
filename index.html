@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Boids 群体智能可视化</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <h1>Boids 群体智能可视化</h1>
+    <p class="subtitle">Cohesion · Alignment · Separation</p>
+  </header>
+
+  <main>
+    <section class="controls" aria-label="控制面板">
+      <div class="control-row">
+        <label for="boidCount">数量 <span id="boidCountVal">150</span></label>
+        <input type="range" id="boidCount" min="20" max="600" step="10" value="150" />
+      </div>
+      <div class="control-row">
+        <label for="perception">感知范围 <span id="perceptionVal">60</span></label>
+        <input type="range" id="perception" min="20" max="150" step="5" value="60" />
+      </div>
+      <div class="control-row">
+        <label for="separationDist">分离距离 <span id="separationDistVal">24</span></label>
+        <input type="range" id="separationDist" min="10" max="80" step="2" value="24" />
+      </div>
+      <div class="control-row">
+        <label for="alignW">对齐权重 <span id="alignWVal">1.0</span></label>
+        <input type="range" id="alignW" min="0" max="3" step="0.1" value="1" />
+      </div>
+      <div class="control-row">
+        <label for="cohesionW">凝聚权重 <span id="cohesionWVal">1.0</span></label>
+        <input type="range" id="cohesionW" min="0" max="3" step="0.1" value="1" />
+      </div>
+      <div class="control-row">
+        <label for="separationW">分离权重 <span id="separationWVal">1.2</span></label>
+        <input type="range" id="separationW" min="0" max="4" step="0.1" value="1.2" />
+      </div>
+      <div class="control-row">
+        <label for="maxSpeed">最大速度 <span id="maxSpeedVal">3.0</span></label>
+        <input type="range" id="maxSpeed" min="0.5" max="6" step="0.1" value="3" />
+      </div>
+      <div class="control-row">
+        <label for="maxForce">最大转向力 <span id="maxForceVal">0.05</span></label>
+        <input type="range" id="maxForce" min="0.01" max="0.3" step="0.01" value="0.05" />
+      </div>
+      <div class="control-row">
+        <label for="avoidanceW">障碍躲避权重 <span id="avoidanceWVal">2.0</span></label>
+        <input type="range" id="avoidanceW" min="0" max="5" step="0.1" value="2" />
+      </div>
+      <div class="control-row">
+        <label for="bounceW">边界回弹权重 <span id="bounceWVal">1.5</span></label>
+        <input type="range" id="bounceW" min="0" max="4" step="0.1" value="1.5" />
+      </div>
+      <div class="control-row">
+        <label for="followW">鼠标跟随权重 <span id="followWVal">0.8</span></label>
+        <input type="range" id="followW" min="0" max="3" step="0.1" value="0.8" />
+      </div>
+      <div class="control-row">
+        <label>
+          <input type="checkbox" id="enableBounce" checked />
+          <span>边界回弹模式</span>
+        </label>
+      </div>
+      <div class="control-row">
+        <label>
+          <input type="checkbox" id="enableMouseFollow" />
+          <span>鼠标跟随模式</span>
+        </label>
+      </div>
+      <div class="buttons">
+        <button id="toggleBtn" class="primary">暂停</button>
+        <button id="resetBtn">重置</button>
+        <button id="clearObstacles">清除障碍</button>
+        <button id="helpBtn">使用说明</button>
+      </div>
+    </section>
+
+    <canvas id="canvas" aria-label="Boids 画布"></canvas>
+
+    <dialog id="helpModal">
+      <article>
+        <header>
+          <strong>Boids 使用说明</strong>
+          <button id="closeHelp" aria-label="关闭">×</button>
+        </header>
+        <section id="helpContent" class="help-content" aria-label="帮助内容">
+          <!-- README content injected by script.js -->
+        </section>
+      </article>
+    </dialog>
+  </main>
+
+  <footer class="app-footer">
+    <span>拖拽滑块可实时调整参数，点击画布添加扰动（吸引/排斥）。</span>
+  </footer>
+
+  <script src="script.js" type="module"></script>
+</body>
+</html>
