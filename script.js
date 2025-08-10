@@ -81,49 +81,59 @@ function highlightBlocks(container) {
   });
 }
 
+// Add copy buttons to code blocks
 function addCopyButtons(container) {
   container.querySelectorAll('pre').forEach(pre => {
+    // Skip if copy button already exists
     if (pre.querySelector('.copy-btn')) return;
-    const btn = document.createElement('button');
-    btn.className = 'copy-btn';
-    btn.type = 'button';
-    btn.textContent = '复制';
-    btn.addEventListener('click', async () => {
-      const codeEl = pre.querySelector('code');
-      const text = codeEl ? codeEl.innerText : pre.innerText;
+    
+    const codeElement = pre.querySelector('code');
+    if (!codeElement) return;
+    
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'copy-btn';
+    copyBtn.textContent = '复制';
+    copyBtn.setAttribute('aria-label', '复制代码');
+    
+    copyBtn.addEventListener('click', async () => {
       try {
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(text);
-        } else {
-          const ta = document.createElement('textarea');
-          ta.value = text;
-          ta.style.position = 'fixed';
-          ta.style.opacity = '0';
-          document.body.appendChild(ta);
-          ta.select();
+        const codeText = codeElement.textContent || codeElement.innerText;
+        await navigator.clipboard.writeText(codeText);
+        
+        // Visual feedback
+        copyBtn.textContent = '已复制!';
+        copyBtn.classList.add('copied');
+        
+        setTimeout(() => {
+          copyBtn.textContent = '复制';
+          copyBtn.classList.remove('copied');
+        }, 2000);
+      } catch (err) {
+        console.warn('Copy failed:', err);
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = codeElement.textContent || codeElement.innerText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
           document.execCommand('copy');
-          document.body.removeChild(ta);
+          copyBtn.textContent = '已复制!';
+          copyBtn.classList.add('copied');
+          setTimeout(() => {
+            copyBtn.textContent = '复制';
+            copyBtn.classList.remove('copied');
+          }, 2000);
+        } catch (fallbackErr) {
+          copyBtn.textContent = '复制失败';
+          setTimeout(() => {
+            copyBtn.textContent = '复制';
+          }, 2000);
         }
-        btn.textContent = '已复制';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('copied'); }, 1500);
-      } catch (e) {
-        btn.textContent = '失败';
-        setTimeout(() => { btn.textContent = '复制'; }, 1500);
+        document.body.removeChild(textArea);
       }
     });
-    pre.appendChild(btn);
-  });
-}
-
-function wrapTables(container) {
-  container.querySelectorAll('table').forEach(table => {
-    const parent = table.parentElement;
-    if (parent && parent.classList.contains('table-wrap')) return;
-    const wrap = document.createElement('div');
-    wrap.className = 'table-wrap';
-    parent.insertBefore(wrap, table);
-    wrap.appendChild(table);
+    
+    pre.appendChild(copyBtn);
   });
 }
 
@@ -135,8 +145,7 @@ async function openHelp() {
       helpContent.innerHTML = renderMarkdown(md);
       helpContent.dataset.loaded = '1';
       highlightBlocks(helpContent);
-      addCopyButtons(helpContent);
-      wrapTables(helpContent);
+      addCopyButtons(helpContent); // Add copy buttons after rendering
     } catch (e) {
       helpContent.innerHTML = '<p>无法加载使用说明。</p>';
     }
